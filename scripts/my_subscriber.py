@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from std_msgs.msg import Int32
+from CONSTANTS import *
 
 
 def callback(msg):

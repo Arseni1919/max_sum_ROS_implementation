@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 import rospy
 from std_msgs.msg import Int32
+from CONSTANTS import *
+
+# from scripts.CONSTANTS import *
 
 rospy.init_node('topic_publisher')
 

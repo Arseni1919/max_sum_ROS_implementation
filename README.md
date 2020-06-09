@@ -4,4 +4,4 @@ The robots: [Hamsters](https://wiki.cogni.io/Category:Hamster)
 
 ROS version: INDIGO
 
-At BGU
+@ BGU - IEM Department - Mr. Arseni Pertzovskiy
