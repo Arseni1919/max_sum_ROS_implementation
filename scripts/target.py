@@ -1,15 +1,19 @@
 #!/usr/bin/env python
-# Import the pygame module
-from scripts.pure_functions import *
 # Import random for random numbers
+# ------------------------------------ for PyCharm
+from scripts.pure_functions import *
+# ------------------------------------ for ROS
+# from pure_functions import *
+# ------------------------------------
 
 
 # Define the enemy object by extending pygame.sprite.Sprite
 # The surface you draw on the screen is now an attribute of 'enemy'
 class Target:
     def __init__(self, cell_size=None, order=-1, req=1, surf_center=-1):
-        super(Target, self).__init__()
+        # super(Target, self).__init__()
         self.cell_size = cell_size
+        self.pos = surf_center
         self.req = req
         self.temp_req = req
         self.curr_nei = []
@@ -20,7 +24,7 @@ class Target:
 
         if order == -1:
             print('[ERROR]: order of Target == -1')
-        self.num_of_agent = order
+        self.num = order
         self.name = 'target%s' % order
 
         # self.surf = pygame.Surface((cell_size, cell_size), pygame.SRCALPHA)
@@ -53,7 +57,7 @@ class Target:
         pass
 
     def get_num_of_agent(self):
-        return self.num_of_agent
+        return self.num
 
     def find_all_nei(self, agents, factor_graph):
         if factor_graph:
@@ -117,7 +121,7 @@ class Target:
     def alg_update(self, algorithm, agents, targets, cells, for_alg):
         algorithm(self.preprocessing(
             agent=self,
-            curr_pose=self.rect.center,
+            curr_pose=self.pos,
             cell_size=self.cell_size,
             agents=agents,
             targets=targets,
@@ -129,10 +133,10 @@ class Target:
         return kwargs
 
     def get_pos(self):
-        return self.rect.center
+        return self.pos
 
-    def set_pos(self, pos):
-        self.rect.center = pos
+    # def set_pos(self, pos):
+    #     self.rect.center = pos
 
     def get_req(self):
         return self.req

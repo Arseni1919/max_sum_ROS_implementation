@@ -1,5 +1,9 @@
 #!/usr/bin/env python
+# ------------------------------------ for PyCharm
 from scripts.CONSTANTS import *
+# ------------------------------------ for ROS
+# from CONSTANTS import *
+# ------------------------------------
 # from CONSTANTS import *
 def distance(pos1, pos2):
     """
@@ -28,7 +32,7 @@ def foo():
 
 def create_tuple_of_agent(agent):
     # AgentTuple = namedtuple('AgentTuple', ['pos', 'num_of_robot_nei', 'num_of_target_nei', 'name', 'num', 'cred'])
-    return AgentTuple(pos=agent.get_pos(), num=agent.get_num_of_agent(), cred=agent.get_cred(), name=agent.get_name(),
+    return RobotTuple(pos=agent.get_pos(), num=agent.get_num_of_agent(), cred=agent.get_cred(), name=agent.get_name(),
                       num_of_target_nei=len(agent.get_curr_nei()), num_of_robot_nei=len(agent.get_curr_robot_nei()),
                       SR=agent.get_SR(), MR=agent.get_MR())
 

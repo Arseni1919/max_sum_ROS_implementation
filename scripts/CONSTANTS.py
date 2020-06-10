@@ -24,7 +24,7 @@ from collections import namedtuple
 
 CellTuple = namedtuple('CellTuple', ['pos', ])
 TargetTuple = namedtuple('TargetTuple', ['pos', 'req', 'name', 'num'])
-AgentTuple = namedtuple('AgentTuple',
+RobotTuple = namedtuple('AgentTuple',
                         ['pos', 'num_of_robot_nei', 'num_of_target_nei', 'name', 'num', 'cred', 'SR', 'MR'])
 MessageType = namedtuple('MessageType', ['from_var_to_func',
                                          'from_var_to_func_only_pos',
@@ -85,10 +85,26 @@ logging.basicConfig(format=_format, level=logging.INFO,
 # logging.getLogger().setLevel(logging.DEBUG)
 
 # -------------------------------------------------------- FOR EXPERIMENT
-ITERATIONS = 10
-target1 = TargetTuple(pos=(1, 1), req=100, name='agent1', num=1)
-target2 = TargetTuple(pos=(2, 2), req=100, name='agent2', num=2)
-target3 = TargetTuple(pos=(3, 3), req=100, name='agent3', num=3)
-target4 = TargetTuple(pos=(4, 4), req=100, name='agent4', num=4)
+ITERATIONS = 1
+MINI_ITERATIONS = 5
+POS_POLICY = 'random_furthest'
+req = 100
+target1 = TargetTuple(pos=(1, 1), req=req, name='target1', num=1)
+target2 = TargetTuple(pos=(2, 2), req=req, name='target2', num=2)
+target3 = TargetTuple(pos=(3, 3), req=req, name='target3', num=3)
+target4 = TargetTuple(pos=(4, 4), req=req, name='target4', num=4)
 TARGETS = [target1, target2, target3, target4]
+
+cred = 30
+SR = 1.5
+MR = 1.5
+robot1 = RobotTuple(pos=(1, 2), num_of_robot_nei=None, num_of_target_nei=None, name='robot1', num=1, cred=cred,
+                    SR=SR, MR=MR)
+robot2 = RobotTuple(pos=(2, 3), num_of_robot_nei=None, num_of_target_nei=None, name='robot2', num=2, cred=cred,
+                    SR=SR, MR=MR)
+robot3 = RobotTuple(pos=(3, 4), num_of_robot_nei=None, num_of_target_nei=None, name='robot3', num=3, cred=cred,
+                    SR=SR, MR=MR)
+robot4 = RobotTuple(pos=(4, 5), num_of_robot_nei=None, num_of_target_nei=None, name='robot4', num=4, cred=cred,
+                    SR=SR, MR=MR)
+ROBOTS = [robot1, robot2, robot3, robot4]
 # -----------------------------------------------------------------------
