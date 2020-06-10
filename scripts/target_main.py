@@ -125,7 +125,7 @@ if __name__ == '__main__':
     print('######################### target%s #########################' % num_of_target)
     named_tuple_of_this_target = get_named_tuple_of_target(int(num_of_target))
     target_object = Target(cell_size=1, order=named_tuple_of_this_target.num, req=named_tuple_of_this_target.req,
-                           surf_center=named_tuple_of_this_target.pos)
+                           surf_center=named_tuple_of_this_target.pos, name=named_tuple_of_this_target.name)
     READY_dict = create_empty_by_iteration_dict()
     # PREP_rob_rob_dict = create_empty_by_iteration_dict()
     PREP_rob_tar_dict = create_empty_by_iteration_dict()

@@ -94,54 +94,6 @@ def send_to(receiver, message):
 # For Max_sum:
 # ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 
-def select_FMR_nei(target, curr_nei, for_alg):
-    '''
-    Assumptions: homogeneous agents and targets, in Fsum mode
-    '''
-    target_needs = target.get_req()
-    agent_gives = for_alg['cred']
-    r_value = int(target_needs / agent_gives + 1)
-    SR = for_alg['SR']
-
-    total_set = []
-    SR_set = []
-    rest_set = []
-
-    for nei in curr_nei:
-        total_set.append(nei)
-        if distance(nei.get_pos(), target.get_pos()) < SR:
-            SR_set.append(nei)
-        else:
-            rest_set.append(nei)
-
-    while len(total_set) > r_value:
-        max_degree, min_degree = 0, 0
-        for nei in total_set:
-            degree = len(nei.get_curr_nei())
-            if nei in rest_set:
-                max_degree = degree if max_degree < degree else max_degree
-            if nei in SR_set:
-                min_degree = degree if min_degree > degree else min_degree
-
-        if len(rest_set) > 0:
-            selected_to_remove = rest_set[0]
-            for nei in rest_set:
-                if len(nei.get_curr_nei()) == max_degree:
-                    selected_to_remove = nei
-                    break
-            total_set.remove(selected_to_remove)
-            rest_set.remove(selected_to_remove)
-        else:
-            selected_to_remove = SR_set[0]
-            for nei in SR_set:
-                if len(nei.get_curr_nei()) == min_degree:
-                    selected_to_remove = nei
-                    break
-            total_set.remove(selected_to_remove)
-            SR_set.remove(selected_to_remove)
-    return total_set
-
-
 def max_sum_create_null_variable_message(possible_pos):
     message = {}
     for pos in possible_pos:
@@ -240,33 +192,6 @@ def get_set_of_max_pos(agent, sum_of_all_messages, pos_policy):
         #     set_of_furthest_directed_max_pos = get_set_of_furthest_directed_max_pos(agent, set_of_max_pos)
         #     return set_of_furthest_directed_max_pos
     return set_of_max_pos
-
-
-def get_closest_pos(set_of_max_pos, directed_pos):
-    closest_pos = random.choice(set_of_max_pos)
-    for pos in set_of_max_pos:
-        if distance(directed_pos, pos) < distance(directed_pos, closest_pos):
-            closest_pos = pos
-    return closest_pos
-
-
-def get_set_of_furthest_directed_max_pos(agent, set_of_max_pos):
-    curr_pos = agent.get_pos()
-    cell_size = agent.get_cell_size()
-    direction = agent.get_direction()
-    MR = agent.get_MR()
-    directed_pos = (curr_pos[0] + int(MR * np.cos(np.deg2rad(direction))),
-                    curr_pos[1] + int(MR * np.sin(np.deg2rad(direction))))
-    closest_pos = get_closest_pos(set_of_max_pos, directed_pos)
-    while distance(closest_pos, directed_pos) > (cell_size):
-        direction = np.random.randint(360)
-        directed_pos = (curr_pos[0] + int(MR * np.cos(np.deg2rad(direction))),
-                        curr_pos[1] + int(MR * np.sin(np.deg2rad(direction))))
-        closest_pos = get_closest_pos(set_of_max_pos, directed_pos)
-
-    agent.set_direction(direction)
-    set_of_furthest_directed_max_pos = [closest_pos]
-    return set_of_furthest_directed_max_pos
 
 
 def get_set_of_furthest_max_pos(agent, set_of_max_pos):

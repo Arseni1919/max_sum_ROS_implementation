@@ -49,129 +49,12 @@ class Robot:
         self.robot_nei_tuples = []
         self.all_nei_tuples = []
 
-        # self.surf = pygame.Surface((2 * MR, 2 * MR), pygame.SRCALPHA)
-
-        # if show_ranges:
-        #     pygame.draw.circle(self.surf, (0, 0, 255, 20), self.surf.get_rect().center, self.MR)
-        #     pygame.draw.circle(self.surf, (255, 0, 0, 40), self.surf.get_rect().center, self.SR)
-
-        # self.car_surf = pygame.transform.scale(pygame.image.load("pics/hamster2.png"), (cell_size, int(0.73 * cell_size)))
-        # self.car_surf.set_colorkey((255, 255, 255), RLEACCEL)
-
-        # Number of Robot
-        # font = pygame.font.SysFont("comicsansms", int(cell_size * 0.25))
-        # text = font.render("%s" % number_of_robot, True, (225, 0, 0))
-        # wt, ht = text.get_size()
-        # self.car_surf.blit(text, (cell_size - wt, 0))
-
-        # self.surf.blit(self.car_surf, self.car_surf.get_rect(center=self.surf.get_rect().center))
-
-        # if surf_center == -1:
-        #     self.rect = self.surf.get_rect()
-        #     print('[ERROR]: surf_center == -1 in Agent')
-        # else:
-        #     self.surf_center = surf_center
-        #     self.rect = self.surf.get_rect(
-        #         center=surf_center
-        #     )
-        #     self.radius = MR
-
-    # Move the sprite based on user keypresses
-    # def move(self):
-    #     # logging.info("Thread %s : starting moving", threading.get_ident())
-    #
-    #     self.arrived = self.rect.center == self.future_pos
-    #
-    #     if not self.arrived:
-    #
-    #         curr_x, curr_y = self.rect.center
-    #         future_x, future_y = self.future_pos
-    #
-    #     # if self.rect.center == self.future_pos:
-    #     #     self.arrived = True
-    #     # else:
-    #
-    #         x = self.step_x if abs(curr_x - future_x) > abs(self.step_x) else (future_x - curr_x)
-    #         y = self.step_y if abs(curr_y - future_y) > abs(self.step_y) else (future_y - curr_y)
-    #
-    #         # self.rect.move_ip(x, y)
-    #         self.rect.center = (curr_x + x, curr_y + y)
-    #
-    #         # print(self.get_name(), ' in move function', ' ', self.rect.center, ' ', self.future_pos,
-    #         #       ' steps:', self.step_x, self.step_y, ' x and y:', x, y)
-
-    def alg_update(self, algorithm, agents, targets, cells, for_alg):
-        self.future_pos = algorithm(self.preprocessing(
-            agent=self,
-            curr_pose=self.pos,
-            cell_size=self.cell_size,
-            agents=agents,
-            targets=targets,
-            cells=cells,
-            for_alg=for_alg,
-        ))
-        self.arrived = False
-
-        # for rendering
-        curr_x, curr_y = self.pos
-        new_x, new_y = self.future_pos
-        self.step_x = int((new_x - curr_x) / self.speed)
-        self.step_y = int((new_y - curr_y) / self.speed)
-
-        time.sleep(1)
-
-    def preprocessing(self, **kwargs):
-        # print('in preprocessing')
-        return kwargs
-
-    # def get_pos(self):
-    #     return self.rect.center
-
     # different from other because the agent is moving -> NOT self.surf_center
     def get_pos(self):
         return self.pos
 
     def get_cell_size(self):
         return self.cell_size
-
-    def set_pos(self, pos):
-        self.pos = pos
-        self.future_pos = pos
-
-    # def get_access_to_inbox(self, type_of_requirement, num_of_agent=None, message=None, name=None):
-    #     with self._lock:
-    #         # logging.info("Thread %s has the lock inside %s", num_of_agent, self.number_of_robot)
-    #         if type_of_requirement == 'message':
-    #             # logging.info("Thread %s has the message: %s", num_of_agent, message)
-    #             if num_of_agent in self.inbox:
-    #                 self.inbox[num_of_agent].append(message)
-    #                 self.named_inbox[name].append(message)
-    #             else:
-    #                 print('[ERROR]: num_of_agent is NOT in self.inbox')
-    #                 # print(num_of_agent, ' inside Agent')
-    #             # logging.info("Agent %s after update has the inbox: %s", self.number_of_robot, self.inbox)
-    #
-    #         if type_of_requirement == 'copy':
-    #             # logging.info("Thread %s about to release the lock!!!! inbox: %s", num_of_agent, self.inbox)
-    #             return copy.deepcopy(self.inbox)
-    #         # logging.info("Thread %s about to release lock inside %s", num_of_agent, self.number_of_robot)
-
-    # def get_access_to_named_inbox(self, type_of_requirement, name_of_agent=None, message=None):
-    #
-    #     with self._lock:
-    #
-    #         if type_of_requirement == 'message':
-    #             # print(name_of_agent, 'is inside the ', self.name, '. Here $$$$$$$$$$$$$$$$$$$$$$')
-    #             # print(list(self.named_inbox.keys()))
-    #             if name_of_agent in self.named_inbox:
-    #
-    #                 self.named_inbox[name_of_agent].append(message)
-    #
-    #             else:
-    #                 print('[ERROR]: num_of_agent is not in self.inbox')
-    #         if type_of_requirement == 'copy':
-    #             return copy.deepcopy(self.named_inbox)
-    #     # print(name_of_agent, 'get_access_to_named_inbox!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 
     def get_access_to_inbox_TAC(self, type_of_requirement, name_of_agent=None, message=None, index_of_iteration=0):
 
@@ -195,78 +78,9 @@ class Robot:
     def get_cred(self):
         return self.cred
 
-    # def get_direction(self):
-    #     return self.direction
-
-    # def set_direction(self, direction):
-    #     self.direction = direction
-
-    def get_curr_nei(self):
-        return self.curr_target_nei
-
-    def get_curr_robot_nei(self):
-        return self.curr_robot_nei
-
     def get_num_of_agent(self):
         return self.num
 
-    # def find_all_nei(self, agents, targets, factor_graph):
-    #     # TargetTuple = namedtuple('TargetTuple', ['pos', 'req', 'name', 'num'])
-    #     # AgentTuple = namedtuple('AgentTuple', ['pos', 'num_of_robot_nei', 'num_of_target_nei', 'name', 'num', 'cred'])
-    #     # Update self.curr_nei
-    #     self.curr_target_nei = []
-    #     if not factor_graph:
-    #         for agent in agents:
-    #             if self.number_of_robot != agent.number_of_robot:
-    #                 if distance(self.get_pos(), agent.get_pos()) < (self.SR + self.MR + agent.get_SR() + agent.get_MR()):
-    #                     self.curr_target_nei.append(agent)
-    #                 if distance(self.get_pos(), agent.get_pos()) < (self.MR + agent.get_MR()):
-    #                     self.curr_robot_nei.append(agent)
-    #     else:
-    #         self.curr_robot_nei = []
-    #         for target in targets:
-    #             if distance(self.get_pos(), target.get_pos()) < (self.SR + self.MR):
-    #                 self.curr_target_nei.append(target)
-    #
-    #         for agent in agents:
-    #             if self.number_of_robot != agent.number_of_robot:
-    #                 if distance(self.get_pos(), agent.get_pos()) < (self.MR + agent.get_MR()):
-    #                     self.curr_robot_nei.append(agent)
-    #
-    #     # Update self.inbox
-    #     self.inbox = {}
-    #     self.named_inbox = {}
-    #     for agent in self.curr_target_nei:
-    #         self.inbox[agent.get_num_of_agent()] = []
-    #         self.named_inbox[agent.get_name()] = []
-    #     for agent in self.curr_robot_nei:
-    #         self.named_inbox[agent.get_name()] = []
-    #
-    #     self.future_pos = self.pos
-
-    # def nei_tuple_update(self, factor_graph, for_alg):
-    #     if factor_graph:
-    #
-    #         self.target_nei_tuples = []
-    #         self.robot_nei_tuples = []
-    #         self.all_nei_tuples = []
-    #         self.tuple_keys_inbox = {}
-    #         self.named_inbox = {}
-    #
-    #         for target in self.curr_target_nei:
-    #             self.target_nei_tuples.append(create_tuple_of_target(target))
-    #             self.named_inbox[target.get_name()] = []
-    #
-    #         for agent in self.curr_robot_nei:
-    #             self.robot_nei_tuples.append(create_tuple_of_agent(agent))
-    #             self.named_inbox[agent.get_name()] = []
-    #         self.robot_nei_tuples.append(create_tuple_of_agent(self))
-    #
-    #         self.all_nei_tuples.extend(self.target_nei_tuples)
-    #         self.all_nei_tuples.extend(self.robot_nei_tuples)
-    #
-    #         for i in range(for_alg['mini_iterations']):
-    #             self.tuple_keys_inbox[i] = {}
 
 
 

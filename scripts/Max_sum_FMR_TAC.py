@@ -124,7 +124,7 @@ def get_sum_of_all_func_messages_TAC(agent, index_of_last_iteration):
     return sum_of_all_messages
 
 
-def var_message_to_func_TAC(sender, receiver, index_of_iteration, message_type_of_sender, message_type_of_receiver, addings):
+def var_message_to_func_TAC(sender, receiver, index_of_iteration, message_type_of_sender, message_type_of_receiver):
     possible_pos = get_possible_pos_with_MR_general(sender)
     receiver_name = receiver.name
     new_message = max_sum_create_null_variable_message(possible_pos)
@@ -197,7 +197,7 @@ def send_TAC(sender_object, receivers_named_tuples, message_func,
              message_type_of_sender, message_type_of_receiver, index_of_iteration, addings=None):
     for nei_named_tuple in receivers_named_tuples:
         message_to_nei = message_func(sender_object, nei_named_tuple, index_of_iteration,
-                                      message_type_of_sender, message_type_of_receiver, addings)
+                                      message_type_of_sender, message_type_of_receiver)
         str_message_to_nei = convert_message_to_json_format(sender_object.get_name(),
                                                             message_to_nei, message_type_of_sender, index_of_iteration)
         send_to(receiver=nei_named_tuple.name, message=str_message_to_nei)
@@ -265,7 +265,7 @@ def max_sum_TAC_variable_node(agent, for_alg):
                              message_type_of_sender=message_types.from_var_to_func,
                              message_type_of_receiver=message_types.from_func_target_to_var,
                              index_of_iteration=index_of_iteration,
-                             addings={'kind': 3}
+                             addings=None
                              )
 
     next_pos = get_next_pos_out_of_sum_of_all_TAC_messages(agent, for_alg)
