@@ -69,26 +69,6 @@ def get_possible_pos_with_MR_general(self_agent):
     return possible_pos
 
 
-# def unpack_json_message(message):
-#     sender, receiver, message_to_nei, type_of_requirement, index_of_iteration = tuple(json.loads(message))
-#     final_message_to_nei = {}
-#     if type_of_requirement in dictionary_message_types:
-#         for k, v in message_to_nei.items():
-#             final_message_to_nei[tuple(json.loads(k))] = v
-#     if type_of_requirement == message_types.from_var_to_func_only_pos:
-#         final_message_to_nei = tuple(json.loads(message_to_nei))
-#     return sender, receiver, final_message_to_nei, type_of_requirement, index_of_iteration
-
-
-# def send_to(receiver, message):
-#     receiver = OBJECTS[receiver]
-#     sender, receiver, message_to_nei, type_of_requirement, index_of_iteration = unpack_json_message(message)
-#     # send_named_message_to(receiver, sender, message, message_type)
-#     # if receiver is sender:
-#     #     print('[ERROR]: receiver is self_agent inside send_message_to()!')
-#     receiver.get_access_to_inbox_TAC(type_of_requirement, sender, message_to_nei, index_of_iteration)
-
-
 # ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
 # For Max_sum:
 # ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
