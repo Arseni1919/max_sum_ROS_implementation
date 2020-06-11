@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-# ------------------------------------ for PyCharm
-from scripts.pure_functions import *
-# ------------------------------------ for ROS
-# from pure_functions import *
+# ------------------------------------ for PyCharm / for ROS
+# from scripts.pure_functions import *
+from pure_functions import *
 # ------------------------------------
 import rospy
 
@@ -13,38 +12,25 @@ class Robot:
     def __init__(self,
                  number_of_robot,
                  cell_size=None,
-
                  surf_center=-1,
                  MR=-1,
                  SR=-1,
-                 show_ranges=False,
-                 speed=10,
                  cred=5,
-                 name=''
+                 name='',
+                 cells=None
                  ):
         # super(Robot, self).__init__()
         self.cell_size = cell_size
         self.pos = surf_center
         self.num = number_of_robot
         self.name = name
-        self.MR = int(MR)
-        self.SR = int(SR)
+        self.MR = MR
+        self.SR = SR
         self.cred = cred
-        self.show_ranges = show_ranges
-        self.curr = (3, -3)
         self.future_pos = None
-        self.arrived = True
-        self.step_x = 0
-        self.step_y = 0
-        self.speed = speed
-        self.curr_target_nei = []
-        self.curr_robot_nei = []
-        self.inbox = {}
-        self.named_inbox = {}
         self.tuple_keys_inbox = {}
         self._lock = threading.RLock()
-        self.cells = []
-        self.targets = []
+        self.cells = cells
         self.target_nei_tuples = []
         self.robot_nei_tuples = []
         self.all_nei_tuples = []

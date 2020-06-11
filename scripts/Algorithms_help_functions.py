@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-# ------------------------------------ for PyCharm
-from scripts.pure_functions import *
-# ------------------------------------ for ROS
-# from pure_functions import *
+# ------------------------------------ for PyCharm / for ROS
+# from scripts.pure_functions import *
+from pure_functions import *
 # ------------------------------------
 
 '''
@@ -40,11 +39,12 @@ def get_possible_pos_with_MR_general(self_agent):
     for cell in cell_set:
         captured = False
         for agent in self_agent.robot_nei_tuples:
+            # if self_agent.num == 4 and agent.num == 3:
+            #     print('%s against %s is %s' % (agent.pos, cell.pos, (agent.pos == cell.pos)))
             if agent.pos == cell.pos and agent.num != self_agent.get_num_of_agent():
                 captured = True
                 break
         if not captured:
-            # cell_set3.append(cell)
             help_set.append(cell)
 
     cell_set = help_set
@@ -58,7 +58,6 @@ def get_possible_pos_with_MR_general(self_agent):
                 captured = True
                 break
         if not captured:
-            # cell_set2.append(cell)
             help_set.append(cell)
 
     cell_set = help_set
@@ -70,24 +69,24 @@ def get_possible_pos_with_MR_general(self_agent):
     return possible_pos
 
 
-def unpack_json_message(message):
-    sender, message_to_nei, type_of_requirement, index_of_iteration = tuple(json.loads(message))
-    final_message_to_nei = {}
-    if type_of_requirement in dictionary_message_types:
-        for k, v in message_to_nei.items():
-            final_message_to_nei[tuple(json.loads(k))] = v
-    if type_of_requirement == message_types.from_var_to_func_only_pos:
-        final_message_to_nei = tuple(json.loads(message_to_nei))
-    return sender, final_message_to_nei, type_of_requirement, index_of_iteration
+# def unpack_json_message(message):
+#     sender, receiver, message_to_nei, type_of_requirement, index_of_iteration = tuple(json.loads(message))
+#     final_message_to_nei = {}
+#     if type_of_requirement in dictionary_message_types:
+#         for k, v in message_to_nei.items():
+#             final_message_to_nei[tuple(json.loads(k))] = v
+#     if type_of_requirement == message_types.from_var_to_func_only_pos:
+#         final_message_to_nei = tuple(json.loads(message_to_nei))
+#     return sender, receiver, final_message_to_nei, type_of_requirement, index_of_iteration
 
 
-def send_to(receiver, message):
-    receiver = OBJECTS[receiver]
-    sender, message_to_nei, type_of_requirement, index_of_iteration = unpack_json_message(message)
-    # send_named_message_to(receiver, sender, message, message_type)
-    # if receiver is sender:
-    #     print('[ERROR]: receiver is self_agent inside send_message_to()!')
-    receiver.get_access_to_inbox_TAC(type_of_requirement, sender, message_to_nei, index_of_iteration)
+# def send_to(receiver, message):
+#     receiver = OBJECTS[receiver]
+#     sender, receiver, message_to_nei, type_of_requirement, index_of_iteration = unpack_json_message(message)
+#     # send_named_message_to(receiver, sender, message, message_type)
+#     # if receiver is sender:
+#     #     print('[ERROR]: receiver is self_agent inside send_message_to()!')
+#     receiver.get_access_to_inbox_TAC(type_of_requirement, sender, message_to_nei, index_of_iteration)
 
 
 # ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------

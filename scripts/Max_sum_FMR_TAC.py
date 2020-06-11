@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-# ------------------------------------ for PyCharm
-from scripts.Algorithms_help_functions import *
-from scripts.robot import *
-from scripts.target import *
-# ------------------------------------ for ROS
-# from Algorithms_help_functions import *
-# from robot import Robot
-# from target import Target
+# ------------------------------------ for PyCharm / v
+# from scripts.Algorithms_help_functions import *
+# from scripts.robot import *
+# from scripts.target import *
+#
+from Algorithms_help_functions import *
+from robot import Robot
+from target import Target
 # ------------------------------------
 
 
@@ -124,7 +124,8 @@ def get_sum_of_all_func_messages_TAC(agent, index_of_last_iteration):
     return sum_of_all_messages
 
 
-def var_message_to_func_TAC(sender, receiver, index_of_iteration, message_type_of_sender, message_type_of_receiver):
+def var_message_to_func_TAC(sender, receiver, index_of_iteration, message_type_of_sender, message_type_of_receiver,
+                            addings):
     possible_pos = get_possible_pos_with_MR_general(sender)
     receiver_name = receiver.name
     new_message = max_sum_create_null_variable_message(possible_pos)
@@ -171,6 +172,7 @@ def wait_to_receive_certain_named_TAC(to_agent, from_list_of_senders, index_of_i
     # wait for the messages
     not_received = True
     while not_received:
+        # print('inside wait_to_receive_certain_named_TAC')
         not_received = False
         tuple_inbox = to_agent.get_access_to_inbox_TAC(copy_types.copy)
         for sender in from_list_of_senders:
@@ -180,7 +182,18 @@ def wait_to_receive_certain_named_TAC(to_agent, from_list_of_senders, index_of_i
                 break
 
 
-def convert_message_to_json_format(sender, message_to_nei, message_type_of_sender, index_of_iteration):
+def unpack_json_message(message):
+    sender, receiver, message_to_nei, type_of_requirement, index_of_iteration = tuple(json.loads(message))
+    final_message_to_nei = {}
+    if type_of_requirement in dictionary_message_types:
+        for k, v in message_to_nei.items():
+            final_message_to_nei[tuple(json.loads(k))] = v
+    if type_of_requirement == message_types.from_var_to_func_only_pos:
+        final_message_to_nei = tuple(json.loads(message_to_nei))
+    return sender, receiver, final_message_to_nei, type_of_requirement, index_of_iteration
+
+
+def convert_message_to_json_format(sender, message_to_nei, message_type_of_sender, index_of_iteration, receiver):
     new_message_to_nei = {}
 
     if message_type_of_sender in dictionary_message_types:
@@ -190,17 +203,22 @@ def convert_message_to_json_format(sender, message_to_nei, message_type_of_sende
     if message_type_of_sender == message_types.from_var_to_func_only_pos:
         new_message_to_nei = json.dumps(message_to_nei)
 
-    return json.dumps((sender, new_message_to_nei, message_type_of_sender, index_of_iteration))
+    return json.dumps((sender, receiver, new_message_to_nei, message_type_of_sender, index_of_iteration))
 
 
 def send_TAC(sender_object, receivers_named_tuples, message_func,
              message_type_of_sender, message_type_of_receiver, index_of_iteration, addings=None):
     for nei_named_tuple in receivers_named_tuples:
         message_to_nei = message_func(sender_object, nei_named_tuple, index_of_iteration,
-                                      message_type_of_sender, message_type_of_receiver)
+                                      message_type_of_sender, message_type_of_receiver, addings)
         str_message_to_nei = convert_message_to_json_format(sender_object.get_name(),
-                                                            message_to_nei, message_type_of_sender, index_of_iteration)
-        send_to(receiver=nei_named_tuple.name, message=str_message_to_nei)
+                                                            message_to_nei,
+                                                            message_type_of_sender,
+                                                            index_of_iteration,
+                                                            nei_named_tuple.name)
+        # topic
+        addings['for_alg']['pub_CALC_topic'].publish(str_message_to_nei)
+        # send_to(receiver=nei_named_tuple.name, message=str_message_to_nei)
 
 
 def get_next_pos_out_of_sum_of_all_TAC_messages(agent, for_alg):
@@ -218,7 +236,13 @@ def final_pos_func(agent, next_pos, iteration_to_look_in, message_type_to_look_f
     inbox = inbox[iteration_to_look_in]
     for nei in agent.robot_nei_tuples:
         if nei.num < agent.get_num_of_agent():
+            # if agent.get_num_of_agent() == 4 and nei.num == 3:
+            #     print('final_pos_func of agent 4')
+            #     print(inbox[(nei.name, message_type_to_look_for)])
+            #     print(agent.get_pos())
+            #     print(next_pos)
             if inbox[(nei.name, message_type_to_look_for)] == next_pos:
+
                 return agent.get_pos()
     return next_pos
 
@@ -251,7 +275,7 @@ def max_sum_TAC_function_node(target, for_alg):
                              message_type_of_sender=message_types.from_func_target_to_var,
                              message_type_of_receiver=message_types.from_var_to_func,
                              index_of_iteration=index_of_iteration,
-                             addings={'fmr_nei': fmr_nei})
+                             addings={'fmr_nei': fmr_nei, 'for_alg': for_alg})
 
 
 def max_sum_TAC_variable_node(agent, for_alg):
@@ -265,7 +289,7 @@ def max_sum_TAC_variable_node(agent, for_alg):
                              message_type_of_sender=message_types.from_var_to_func,
                              message_type_of_receiver=message_types.from_func_target_to_var,
                              index_of_iteration=index_of_iteration,
-                             addings=None
+                             addings={'for_alg': for_alg}
                              )
 
     next_pos = get_next_pos_out_of_sum_of_all_TAC_messages(agent, for_alg)
@@ -276,7 +300,7 @@ def max_sum_TAC_variable_node(agent, for_alg):
                          message_type_of_sender=message_types.from_var_to_func_only_pos,
                          message_type_of_receiver=message_types.from_var_to_func_only_pos,
                          index_of_iteration=(mini_iterations - 1),
-                         addings=None
+                         addings={'for_alg': for_alg}
                          )
 
     return final_pos_func(agent, next_pos, (mini_iterations - 1), message_types.from_var_to_func_only_pos)

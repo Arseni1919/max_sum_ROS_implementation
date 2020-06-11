@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-# ------------------------------------ for PyCharm
-from scripts.Max_sum_FMR_TAC import *
-# ------------------------------------ for ROS
-# from Max_sum_FMR_TAC import *
+# ------------------------------------ for PyCharm / for ROS
+# from scripts.Max_sum_FMR_TAC import *
+from Max_sum_FMR_TAC import *
+# ------------------------------------
 # ------------------------------------
 import rospy
 from std_msgs.msg import Int32, Bool, String
@@ -25,6 +25,11 @@ def callback_READY_topic(msg):
     READY_dict[message['iteration']][message['name']] = message['ready']
 
 
+def callback_CALC_READY_topic(msg):
+    message = json.loads(msg.data)
+    CALC_READY_dict[message['iteration']][message['name']] = message['ready']
+
+
 def callback_PREP_rob_rob_topic(msg):
     message = json.loads(msg.data)
     PREP_rob_rob_dict[message['iteration']][message['name']] = message['pos']
@@ -42,6 +47,16 @@ def callback_PREP_rob_tar_topic(msg):
                                                                 'MR': message['MR']}
 
 
+def callback_CALC_topic(msg):
+    sender, receiver, message_to_nei, type_of_requirement, index_of_iteration = unpack_json_message(msg.data)
+    # print('---')
+    # print('here message to %s from %s' % (sender, receiver))
+    if receiver == robot_object.name:
+        # print('---')
+        # print('(inside) here message to %s from %s' % (receiver, sender))
+        robot_object.get_access_to_inbox_TAC(type_of_requirement, sender, message_to_nei, index_of_iteration)
+
+
 def callback_amcl(msg):
     print('---')
     print('x_pose_amcl: %s' % msg.pose.pose.position.x)
@@ -56,7 +71,7 @@ def callback_amcl(msg):
 
 
 def wait(curr_iteration):
-    message = json.dumps({'name': robot_object.get_name(), 'iteration': curr_iteration, 'ready': True})
+    message = json.dumps({'name': robot_object.name, 'iteration': curr_iteration, 'ready': True})
     # print(message)
     everybody_ready = False
     while not everybody_ready:
@@ -72,6 +87,27 @@ def wait(curr_iteration):
                 everybody_ready = False
                 break
         rate.sleep()
+    print('[WAIT] - finished')
+
+
+def calc_wait(curr_iteration):
+    message = json.dumps({'name': robot_object.name, 'iteration': curr_iteration, 'ready': True})
+    # print(message)
+    everybody_ready = False
+    while not everybody_ready:
+        # print(READY_dict)
+        pub_CALC_READY_topic.publish(message)
+        everybody_ready = True
+        for target in TARGETS:
+            if target.name not in CALC_READY_dict[curr_iteration]:
+                everybody_ready = False
+                break
+        for robot in ROBOTS:
+            if robot.name not in CALC_READY_dict[curr_iteration]:
+                everybody_ready = False
+                break
+        rate.sleep()
+    print('[CALC WAIT] - finished')
 
 
 def first_nei_update_of_robot(curr_iteration):
@@ -80,6 +116,11 @@ def first_nei_update_of_robot(curr_iteration):
     robot_object.all_nei_tuples = []
     robot_object.tuple_keys_inbox = {}
     for target in TARGETS:
+
+        # print('--- distance %s ---' % target.name)
+        # print(distance(target.pos, robot_object.pos))
+        # print(robot_object.SR + robot_object.MR)
+
         if distance(target.pos, robot_object.pos) < (robot_object.SR + robot_object.MR):
             robot_object.target_nei_tuples.append(target)
     for robot in ROBOTS:
@@ -97,7 +138,7 @@ def final_nei_update_of_robot(curr_iteration):
     new_robot_nei_tuples = []
     for robot in robot_object.robot_nei_tuples:
         message_dict = PREP_rob_tar_dict[curr_iteration][robot.name]
-        new_robot_nei_tuples.append(RobotTuple(pos=message_dict['pos'],
+        new_robot_nei_tuples.append(RobotTuple(pos=tuple(message_dict['pos']),
                                                num_of_robot_nei=message_dict['num_of_robot_nei'],
                                                num_of_target_nei=message_dict['num_of_target_nei'],
                                                name=message_dict['name'],
@@ -122,8 +163,8 @@ def prep(curr_iteration):
                 everybody_sent = False
                 break
         rate.sleep()
-    print('--- PREP_rob_rob_dict: ---')
-    print(PREP_rob_rob_dict)
+    # print('--- PREP_rob_rob_dict: ---')
+    # print(PREP_rob_rob_dict)
     print('[PREP] - finished rob-rob message exchange')
 
     first_nei_update_of_robot(curr_iteration)
@@ -143,41 +184,56 @@ def prep(curr_iteration):
                 everybody_sent = False
                 break
         rate.sleep()
-    print('--- PREP_rob_tar_dict: ---')
-    print(PREP_rob_tar_dict)
+    # print('--- PREP_rob_tar_dict: ---')
+    # print(PREP_rob_tar_dict)
     print('[PREP] - finished rob-tar message exchange')
 
     final_nei_update_of_robot(curr_iteration)
+    print('[PREP] - finished final nei update')
 
-    print('--- robot_object.robot_nei_tuples: ---')
-    for robot in robot_object.robot_nei_tuples:
-        print('robot-neighbour: %s' % robot.name)
-    print('--- robot_object.target_nei_tuples: ---')
-    for target in robot_object.target_nei_tuples:
-        print('target-neighbour: %s' % target.name)
+    # print('--- robot_object.robot_nei_tuples: ---')
+    # for robot in robot_object.robot_nei_tuples:
+    #     print('robot-neighbour: %s' % robot.name)
+    # print('--- robot_object.target_nei_tuples: ---')
+    # for target in robot_object.target_nei_tuples:
+    #     print('target-neighbour: %s' % target.name)
 
 
 def calc():
+
     kwargs = {'agent': robot_object, 'for_alg': {
         'mini_iterations': MINI_ITERATIONS,
         'SR': SR,
         'cred': cred,
         'pos_policy': POS_POLICY,
+        'pub_CALC_topic': pub_CALC_topic,
     }}
-    return Max_sum_TAC(kwargs)
+
+    next_position = Max_sum_TAC(kwargs)
+    print('[CALC] - finished calc - next_pos of %s is %s' % (robot_object.name, next_position))
+    return next_position
 
 
 def move(curr_iteration, to_pos):
+    # maybe we have to wait to others here
     if curr_iteration != 0:
-        # maybe we have to wait to others here
+        # client.send_goal(goal_pose(to_pos))
+        # client.wait_for_result()
         pass
+
     # client.send_goal(goal_pose(to_pos))
     # client.wait_for_result()
-    pass
+    robot_object.pos = tuple(to_pos)
+    print('[MOVE] - finished move')
+    # print(robot_object.pos)
 
 
 def finish():
-    pass
+    # save results
+    if NEED_TO_SAVE_RESULTS:
+        print('[FIN] - finished saving results')
+    else:
+        print('[FIN] - finished without saving results')
 
 
 def get_named_tuple_of_robot(curr_num_of_robot):
@@ -216,13 +272,16 @@ if __name__ == '__main__':
     num_of_robot = sys.argv[1]
     print('######################### robot%s #########################' % num_of_robot)
     named_tuple_of_this_robot = get_named_tuple_of_robot(int(num_of_robot))
+
     robot_object = Robot(number_of_robot=named_tuple_of_this_robot.num,
                          cell_size=1, surf_center=named_tuple_of_this_robot.pos,
                          MR=named_tuple_of_this_robot.MR, SR=named_tuple_of_this_robot.SR,
-                         cred=named_tuple_of_this_robot.cred, name=named_tuple_of_this_robot.name)
+                         cred=named_tuple_of_this_robot.cred, name=named_tuple_of_this_robot.name, cells=CELLS)
+    # print('[SR] - %s' % robot_object.SR)
     READY_dict = create_empty_by_iteration_dict()
     PREP_rob_rob_dict = create_empty_by_iteration_dict()
     PREP_rob_tar_dict = create_empty_by_iteration_dict()
+    CALC_READY_dict = create_empty_by_iteration_dict()
     # ------------------------------------------------------- #
     rospy.init_node('robot%s' % sys.argv[1])
     pub_READY_topic = rospy.Publisher('READY_topic', String, latch=True, queue_size=10)
@@ -231,6 +290,10 @@ if __name__ == '__main__':
     sub_PREP_rob_rob_topic = rospy.Subscriber('PREP_rob_rob_topic', String, callback_PREP_rob_rob_topic)
     pub_PREP_rob_tar_topic = rospy.Publisher('PREP_rob_tar_topic', String, latch=True, queue_size=10)
     sub_PREP_rob_tar_topic = rospy.Subscriber('PREP_rob_tar_topic', String, callback_PREP_rob_tar_topic)
+    pub_CALC_READY_topic = rospy.Publisher('CALC_READY_topic', String, latch=True, queue_size=50)
+    sub_CALC_READY_topic = rospy.Subscriber('CALC_READY_topic', String, callback_CALC_READY_topic)
+    pub_CALC_topic = rospy.Publisher('CALC_topic', String, latch=True, queue_size=50)
+    sub_CALC_topic = rospy.Subscriber('CALC_topic', String, callback_CALC_topic)
     # sub_amcl = rospy.Subscriber('/agent%s/amcl_pose' % sys.argv[1], PoseWithCovarianceStamped, callback_amcl)
     rate = rospy.Rate(1)  # 1 second
 
@@ -246,6 +309,7 @@ if __name__ == '__main__':
         print('# --------------------- iteration: %s --------------------- #' % iteration)
         wait(iteration)
         prep(iteration)
+        calc_wait(iteration)
         next_pos = calc()
         move(iteration, next_pos)
     finish()

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+
+	<node pkg = "max_sum_mst" type = "target_main.py" args = "1" name = "target1"/>
+	<node pkg = "max_sum_mst" type = "target_main.py" args = "2" name = "target2"/>
+	<node pkg = "max_sum_mst" type = "target_main.py" args = "3" name = "target3"/>
+	<node pkg = "max_sum_mst" type = "target_main.py" args = "4" name = "target4"/>
+	<!--
+	<node pkg = "my_code2" type = "DSA_MST.py" name = "robot4" args = "4"/>\
+	<node pkg = "my_code2" type = "DSA_MST.py" name = "robot5" args = "5"/>\
+	<node pkg = "my_code2" type = "DSA_MST.py" name = "robot6" args = "6"/>\
+	<node pkg = "my_code2" type = "DSA_MST.py" name = "robot7" args = "7"/>\
+	<node pkg = "my_code2" type = "DSA_MST.py" name = "robot8" args = "8"/>\
+	<node pkg = "my_code2" type = "DSA_MST.py" name = "robot9" args = "9"/>\
+	-->
+	
+</launch>

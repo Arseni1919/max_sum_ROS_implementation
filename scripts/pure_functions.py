@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-# ------------------------------------ for PyCharm
-from scripts.CONSTANTS import *
-# ------------------------------------ for ROS
-# from CONSTANTS import *
+# ------------------------------------ for PyCharm / for ROS
+# from scripts.CONSTANTS import *
+from CONSTANTS import *
 # ------------------------------------
-# from CONSTANTS import *
+
+
+
 def distance(pos1, pos2):
     """
     input:

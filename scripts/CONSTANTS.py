@@ -85,26 +85,36 @@ logging.basicConfig(format=_format, level=logging.INFO,
 # logging.getLogger().setLevel(logging.DEBUG)
 
 # -------------------------------------------------------- FOR EXPERIMENT
-ITERATIONS = 1
+ITERATIONS = 10
 MINI_ITERATIONS = 5
+NEED_TO_SAVE_RESULTS = False
 POS_POLICY = 'random_furthest'
 req = 100
-target1 = TargetTuple(pos=(1, 1), req=req, name='target1', num=1)
-target2 = TargetTuple(pos=(2, 2), req=req, name='target2', num=2)
-target3 = TargetTuple(pos=(3, 3), req=req, name='target3', num=3)
-target4 = TargetTuple(pos=(4, 4), req=req, name='target4', num=4)
+target1 = TargetTuple(pos=(3, 3), req=req, name='target1', num=1)
+target2 = TargetTuple(pos=(6, 9), req=req, name='target2', num=2)
+target3 = TargetTuple(pos=(0, 5), req=req, name='target3', num=3)
+target4 = TargetTuple(pos=(5, 5), req=req, name='target4', num=4)
 TARGETS = [target1, target2, target3, target4]
+# TARGETS = [target1, target2]
 
 cred = 30
-SR = 1.5
-MR = 1.5
-robot1 = RobotTuple(pos=(1, 2), num_of_robot_nei=None, num_of_target_nei=None, name='robot1', num=1, cred=cred,
+SR = 2.5
+MR = 2.5
+robot1 = RobotTuple(pos=(1, 7), num_of_robot_nei=None, num_of_target_nei=None, name='robot1', num=1, cred=cred,
                     SR=SR, MR=MR)
-robot2 = RobotTuple(pos=(2, 3), num_of_robot_nei=None, num_of_target_nei=None, name='robot2', num=2, cred=cred,
+robot2 = RobotTuple(pos=(6, 4), num_of_robot_nei=None, num_of_target_nei=None, name='robot2', num=2, cred=cred,
                     SR=SR, MR=MR)
-robot3 = RobotTuple(pos=(3, 4), num_of_robot_nei=None, num_of_target_nei=None, name='robot3', num=3, cred=cred,
+robot3 = RobotTuple(pos=(3, 9), num_of_robot_nei=None, num_of_target_nei=None, name='robot3', num=3, cred=cred,
                     SR=SR, MR=MR)
 robot4 = RobotTuple(pos=(4, 5), num_of_robot_nei=None, num_of_target_nei=None, name='robot4', num=4, cred=cred,
                     SR=SR, MR=MR)
 ROBOTS = [robot1, robot2, robot3, robot4]
+# ROBOTS = [robot1, robot2]
+
+CELLS = []
+rows = 10
+columns = 10
+for r in range(rows):
+    for c in range(columns):
+        CELLS.append(CellTuple(pos=(r, c)))
 # -----------------------------------------------------------------------

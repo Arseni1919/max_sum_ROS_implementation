@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 # Import random for random numbers
-# ------------------------------------ for PyCharm
-from scripts.pure_functions import *
+# ------------------------------------ for PyCharm / for ROS
+# from scripts.pure_functions import *
+from pure_functions import *
 
-
-# ------------------------------------ for ROS
-# from pure_functions import *
 # ------------------------------------
 
 
