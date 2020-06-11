@@ -57,6 +57,11 @@ def callback_CALC_topic(msg):
         robot_object.get_access_to_inbox_TAC(type_of_requirement, sender, message_to_nei, index_of_iteration)
 
 
+def callback_MOVE_topic(msg):
+    message = json.loads(msg.data)
+    MOVE_dict[message['iteration']][message['name']] = message['ready']
+
+
 def callback_amcl(msg):
     print('---')
     print('x_pose_amcl: %s' % msg.pose.pose.position.x)
@@ -108,6 +113,20 @@ def calc_wait(curr_iteration):
                 break
         rate.sleep()
     print('[CALC WAIT] - finished')
+
+
+def move_wait(curr_iteration):
+    # print(message)
+    everybody_ready = False
+    while not everybody_ready:
+        everybody_ready = True
+        for robot in ROBOTS:
+            if robot.num < robot_object.num:
+                if robot.name not in MOVE_dict[curr_iteration]:
+                    everybody_ready = False
+                    break
+        rate.sleep()
+    print('[MOVE WAIT] - finished')
 
 
 def first_nei_update_of_robot(curr_iteration):
@@ -215,15 +234,13 @@ def calc():
 
 
 def move(curr_iteration, to_pos):
-    # maybe we have to wait to others here
-    if curr_iteration != 0:
-        # client.send_goal(goal_pose(to_pos))
-        # client.wait_for_result()
-        pass
 
     # client.send_goal(goal_pose(to_pos))
     # client.wait_for_result()
+
     robot_object.pos = tuple(to_pos)
+    message = json.dumps({'name': robot_object.name, 'iteration': curr_iteration, 'ready': True})
+    pub_MOVE_topic.publish(message)
     print('[MOVE] - finished move')
     # print(robot_object.pos)
 
@@ -282,6 +299,7 @@ if __name__ == '__main__':
     PREP_rob_rob_dict = create_empty_by_iteration_dict()
     PREP_rob_tar_dict = create_empty_by_iteration_dict()
     CALC_READY_dict = create_empty_by_iteration_dict()
+    MOVE_dict = create_empty_by_iteration_dict()
     # ------------------------------------------------------- #
     rospy.init_node('robot%s' % sys.argv[1])
     pub_READY_topic = rospy.Publisher('READY_topic', String, latch=True, queue_size=10)
@@ -294,6 +312,8 @@ if __name__ == '__main__':
     sub_CALC_READY_topic = rospy.Subscriber('CALC_READY_topic', String, callback_CALC_READY_topic)
     pub_CALC_topic = rospy.Publisher('CALC_topic', String, latch=True, queue_size=50)
     sub_CALC_topic = rospy.Subscriber('CALC_topic', String, callback_CALC_topic)
+    pub_MOVE_topic = rospy.Publisher('MOVE_topic', String, latch=True, queue_size=50)
+    sub_MOVE_topic = rospy.Subscriber('MOVE_topic', String, callback_MOVE_topic)
     # sub_amcl = rospy.Subscriber('/agent%s/amcl_pose' % sys.argv[1], PoseWithCovarianceStamped, callback_amcl)
     rate = rospy.Rate(1)  # 1 second
 
@@ -311,5 +331,6 @@ if __name__ == '__main__':
         prep(iteration)
         calc_wait(iteration)
         next_pos = calc()
+        move_wait(iteration)
         move(iteration, next_pos)
     finish()

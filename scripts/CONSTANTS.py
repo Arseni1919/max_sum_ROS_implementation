@@ -85,7 +85,7 @@ logging.basicConfig(format=_format, level=logging.INFO,
 # logging.getLogger().setLevel(logging.DEBUG)
 
 # -------------------------------------------------------- FOR EXPERIMENT
-ITERATIONS = 10
+ITERATIONS = 3
 MINI_ITERATIONS = 5
 NEED_TO_SAVE_RESULTS = False
 POS_POLICY = 'random_furthest'
