@@ -150,6 +150,22 @@ def calc():
 def finish():
     # save results
     if NEED_TO_SAVE_RESULTS:
+        # if target_object.num == 1:
+        list_of_remained_coverages = []
+        for curr_iteration in range(ITERATIONS):
+            self_req = target_object.req
+            for robot in ROBOTS:
+                message_dict = PREP_rob_tar_dict[curr_iteration][robot.name]
+
+                # print('--- distance %s ---' % message_dict['name'])
+                # print(distance(PREP_rob_tar_dict[curr_iteration][robot.name]['pos'], target_object.pos))
+                # print((message_dict['SR'] + message_dict['MR']))
+
+                if distance(message_dict['pos'], target_object.pos) < (message_dict['SR'] + message_dict['MR']):
+                    self_req = max(self_req - message_dict['cred'], 0)
+            list_of_remained_coverages.append(self_req)
+        plt.plot(list_of_remained_coverages)
+        plt.show()
         print('[FIN] - finished saving results')
     else:
         print('[FIN] - finished without saving results')
@@ -194,6 +210,7 @@ if __name__ == '__main__':
     sub_CALC_READY_topic = rospy.Subscriber('CALC_READY_topic', String, callback_CALC_READY_topic)
     pub_CALC_topic = rospy.Publisher('CALC_topic', String, latch=True, queue_size=50)
     sub_CALC_topic = rospy.Subscriber('CALC_topic', String, callback_CALC_topic)
+    # pub_FINISH_topic = rospy.Publisher('FINISH_topic', String, latch=True, queue_size=50)
     rate = rospy.Rate(1)  # 1 second
 
     # start(READY)

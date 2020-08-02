@@ -29,6 +29,7 @@ def get_possible_pos_with_MR_general(self_agent):
 
     # all cells that are in MR range
     for cell in self_agent.cells:
+        # print(cell.pos)
         if distance(self_agent.get_pos(), cell.pos) < self_agent.get_MR():
             help_set.append(cell)
 

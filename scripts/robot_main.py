@@ -60,6 +60,7 @@ def callback_CALC_topic(msg):
 def callback_MOVE_topic(msg):
     message = json.loads(msg.data)
     MOVE_dict[message['iteration']][message['name']] = message['ready']
+    print('In iteration %s %s arrived to its position' % (message['iteration'], message['name']))
 
 
 def callback_amcl(msg):
@@ -229,14 +230,14 @@ def calc():
     }}
 
     next_position = Max_sum_TAC(kwargs)
-    print('[CALC] - finished calc - next_pos of %s is %s' % (robot_object.name, next_position))
+    print('[CALC] - finished calc of %s prev_pos: %s -> next_pos: %s' % (robot_object.name, robot_object.pos, next_position))
     return next_position
 
 
 def move(curr_iteration, to_pos):
 
-    # client.send_goal(goal_pose(to_pos))
-    # client.wait_for_result()
+    client.send_goal(goal_pose(to_pos))
+    client.wait_for_result()
 
     robot_object.pos = tuple(to_pos)
     message = json.dumps({'name': robot_object.name, 'iteration': curr_iteration, 'ready': True})
@@ -316,12 +317,19 @@ if __name__ == '__main__':
     sub_MOVE_topic = rospy.Subscriber('MOVE_topic', String, callback_MOVE_topic)
     # sub_amcl = rospy.Subscriber('/agent%s/amcl_pose' % sys.argv[1], PoseWithCovarianceStamped, callback_amcl)
     rate = rospy.Rate(1)  # 1 second
+    print('[INFO] - before initializing SimpleActionClient')
+    client = actionlib.SimpleActionClient('agent%s/move_base' % sys.argv[1], MoveBaseAction)
+    client.wait_for_server()
+    print('[INFO] - after initializing SimpleActionClient')
 
-    # client = actionlib.SimpleActionClient('agent%s/move_base' % sys.argv[1], MoveBaseAction)
-    # client.wait_for_server()
+    print('[INFO] - before going to start_pose6 -> (%s, %s)' % (start_pose6[0], start_pose6[1]))
+    client.send_goal(goal_pose(start_pose6))
+    client.wait_for_result()
+    print('[INFO] - after going to start_pose6')
 
     # client.send_goal(goal_pose(named_tuple_of_this_robot.pos))
     # client.wait_for_result()
+    print('[INITIAL] - came to initial position')
     # move(0, named_tuple_of_this_robot.pos)
 
     # start(READY)

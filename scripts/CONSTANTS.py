@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # import pygame
+from __future__ import print_function
+from decimal import Decimal
+from prettytable import PrettyTable
 import sys
+# print(sys.version)
 import random
 import logging
 import threading
@@ -55,34 +59,70 @@ logging.basicConfig(format=_format, level=logging.INFO,
 # -------------------------------------------------------- FOR EXPERIMENT
 ITERATIONS = 3
 MINI_ITERATIONS = 5
-NEED_TO_SAVE_RESULTS = False
+NEED_TO_SAVE_RESULTS = True
 POS_POLICY = 'random_furthest'
 req = 100
-target1 = TargetTuple(pos=(3, 3), req=req, name='target1', num=1)
-target2 = TargetTuple(pos=(6, 9), req=req, name='target2', num=2)
-target3 = TargetTuple(pos=(0, 5), req=req, name='target3', num=3)
-target4 = TargetTuple(pos=(5, 5), req=req, name='target4', num=4)
-TARGETS = [target1, target2, target3, target4]
-# TARGETS = [target1, target2]
+target1 = TargetTuple(pos=(1, -1), req=req, name='target1', num=1)
+target2 = TargetTuple(pos=(2, -1), req=req, name='target2', num=2)
+target3 = TargetTuple(pos=(3, -2), req=req, name='target3', num=3)
+target4 = TargetTuple(pos=(4, -2), req=req, name='target4', num=4)
+# TARGETS = [target1, target2, target3, target4]
+TARGETS = [target1, target3]
 
 cred = 30
-SR = 2.5
+SR = 1.0
 MR = 2.5
-robot1 = RobotTuple(pos=(1, 7), num_of_robot_nei=None, num_of_target_nei=None, name='robot1', num=1, cred=cred,
+start_pose1 = (2, -1)
+start_pose2 = (2, 0)
+start_pose3 = (0.5, 0.5)
+start_pose4 = (1.5, 1.5)
+
+start_pose5 = (2.1, 1)
+# start_pose6 = (2.0, -3.1)
+start_pose6 = (0.0, 0.0)
+
+robot1 = RobotTuple(pos=start_pose1, num_of_robot_nei=None, num_of_target_nei=None, name='robot1', num=1, cred=cred,
                     SR=SR, MR=MR)
-robot2 = RobotTuple(pos=(6, 4), num_of_robot_nei=None, num_of_target_nei=None, name='robot2', num=2, cred=cred,
+# robot2 = RobotTuple(pos=(2.1, 3), num_of_robot_nei=None, num_of_target_nei=None, name='robot2', num=2, cred=cred,
+#                     SR=SR, MR=MR)
+# robot5 = RobotTuple(pos=(2.1, 3), num_of_robot_nei=None, num_of_target_nei=None, name='robot5', num=5, cred=cred,
+#                     SR=SR, MR=MR)
+robot3 = RobotTuple(pos=start_pose2, num_of_robot_nei=None, num_of_target_nei=None, name='robot3', num=3, cred=cred,
                     SR=SR, MR=MR)
-robot3 = RobotTuple(pos=(3, 9), num_of_robot_nei=None, num_of_target_nei=None, name='robot3', num=3, cred=cred,
+# robot4 = RobotTuple(pos=(1.2, 1), num_of_robot_nei=None, num_of_target_nei=None, name='robot4', num=4, cred=cred,
+#                     SR=SR, MR=MR)
+
+robot4 = RobotTuple(pos=start_pose4, num_of_robot_nei=None, num_of_target_nei=None, name='robot4', num=4, cred=cred,
                     SR=SR, MR=MR)
-robot4 = RobotTuple(pos=(4, 5), num_of_robot_nei=None, num_of_target_nei=None, name='robot4', num=4, cred=cred,
+robot5 = RobotTuple(pos=start_pose5, num_of_robot_nei=None, num_of_target_nei=None, name='robot5', num=5, cred=cred,
                     SR=SR, MR=MR)
-ROBOTS = [robot1, robot2, robot3, robot4]
+
+# ROBOTS = [robot1, robot3, robot4, robot5]
 # ROBOTS = [robot1, robot2]
+ROBOTS = [robot3, robot5]
 
 CELLS = []
 rows = 10
 columns = 10
+# Transformation
+m = np.array([[2.0, 2.1], [-3.1, 1]])
+b = np.array([0, 0])
+# m = np.array([[4, -1], [2, 2.5]])
+# b = np.array([0, 0.2])
+field = PrettyTable()
+
+field.field_names = [i+1 for i in range(rows)]
 for r in range(rows):
+    # print()
+    raw = []
     for c in range(columns):
-        CELLS.append(CellTuple(pos=(r, c)))
+        v = np.array([r/float(rows), c/float(columns)])
+        out = np.asarray(np.dot(m, v) + b)
+        # print(sys.version)
+        raw.append('%s,%s'.expandtabs(10) % (round(Decimal(out[0]),1), round(Decimal(out[1]),1)))
+        # print('%s,%s \t'.expandtabs(10) % (round(Decimal(out[0]),1), round(Decimal(out[1]),1)), end='')
+        CELLS.append(CellTuple(pos=(out[0], out[1])))
+    field.add_row(raw)
+print(field)
+
 # -----------------------------------------------------------------------
