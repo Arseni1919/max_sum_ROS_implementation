@@ -1,5 +1,5 @@
+#!/home/hamster/anaconda3/bin/python
 #!/usr/bin/env python
-
 # ------------------------------------ for PyCharm / for ROS
 # from scripts.Max_sum_FMR_TAC import *
 from Max_sum_FMR_TAC import *

@@ -1,3 +1,4 @@
+#!/home/hamster/anaconda3/bin/python
 #!/usr/bin/env python
 
 # ------------------------------------ for PyCharm / for ROS
@@ -236,8 +237,8 @@ def calc():
 
 def move(curr_iteration, to_pos):
 
-    client.send_goal(goal_pose(to_pos))
-    client.wait_for_result()
+    #client.send_goal(goal_pose(to_pos))
+    #client.wait_for_result()
 
     robot_object.pos = tuple(to_pos)
     message = json.dumps({'name': robot_object.name, 'iteration': curr_iteration, 'ready': True})
@@ -318,13 +319,13 @@ if __name__ == '__main__':
     # sub_amcl = rospy.Subscriber('/agent%s/amcl_pose' % sys.argv[1], PoseWithCovarianceStamped, callback_amcl)
     rate = rospy.Rate(1)  # 1 second
     print('[INFO] - before initializing SimpleActionClient')
-    client = actionlib.SimpleActionClient('agent%s/move_base' % sys.argv[1], MoveBaseAction)
-    client.wait_for_server()
+    #client = actionlib.SimpleActionClient('agent%s/move_base' % sys.argv[1], MoveBaseAction)
+    #client.wait_for_server()
     print('[INFO] - after initializing SimpleActionClient')
 
     print('[INFO] - before going to start_pose6 -> (%s, %s)' % (start_pose6[0], start_pose6[1]))
-    client.send_goal(goal_pose(start_pose6))
-    client.wait_for_result()
+    #client.send_goal(goal_pose(start_pose6))
+    #client.wait_for_result()
     print('[INFO] - after going to start_pose6')
 
     # client.send_goal(goal_pose(named_tuple_of_this_robot.pos))

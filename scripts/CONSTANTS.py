@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 # import pygame
 from __future__ import print_function
+import os
 from decimal import Decimal
 from prettytable import PrettyTable
 import sys
-# print(sys.version)
+print(sys.executable)
+print('---')
+for i in sys.path:
+    print(i)
+import os
 import random
 import logging
 import threading
@@ -25,6 +30,10 @@ import itertools
 from pprint import pprint
 # import statistics
 from collections import namedtuple
+
+
+
+
 
 CellTuple = namedtuple('CellTuple', ['pos', ])
 TargetTuple = namedtuple('TargetTuple', ['pos', 'req', 'name', 'num'])
